@@ -12,7 +12,7 @@ module Roads
 
   def Roads.get
     #opens the API url and returns parsed JSON
-    response = open "roads.json"
+    response = open "http://www.sfu.ca/security/sfuroadconditions/api/2/current"
     #puts response.status
     doc = ""
     response.each do |line|
@@ -44,8 +44,7 @@ module Roads
       end
 
     rescue NoMethodError
-      #error handling here
-      return
+      return "Campus #{campus.captialize} not found."
     end
     #a bit of regex magic and gsub
     doc.gsub(/"|{|}/, "").gsub(/_/, " and ")
