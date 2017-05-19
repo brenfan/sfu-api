@@ -25,7 +25,7 @@ def announcements():
     return str
 
 
-def conditions(campus = "burnaby"):
+def conditions(campus = "burnaby"):z
     #fetch data
     data = get()
     #start building return string
