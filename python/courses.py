@@ -37,7 +37,7 @@ def find_section(dept, num, year = 'current', term = 'current'):
         return None
 
 #returns a course outline JSON Dictionary
-def get_outline(dept, num, sec='placeholder', year = 'current', term = 'current'):
+def find_outline(dept, num, sec='placeholder', year = 'current', term = 'current'):
     if sec == 'placeholder':
         sec = find_section(dept, num, year, term)
         if sec == None:
@@ -156,5 +156,5 @@ Description: {}""".format(\
     return doc
 
 def print_outline(dept, num, sec='placeholder', year = 'current', term = 'current'):
-    data = get_outline(dept, num, sec, year, term)
+    data = find_outline(dept, num, sec, year, term)
     return format_outline(data)
