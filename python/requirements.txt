@@ -1,4 +1,4 @@
-json
 htmlentities
 open-uri
 sanitize
+requests
