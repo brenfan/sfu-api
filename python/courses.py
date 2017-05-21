@@ -53,7 +53,7 @@ def extract(data:dict):
         schedule = data['courseSchedule']
 
     except Exception:
-        return "Error: Maybe the class doesn't exist? \nreturned data:\n" + json.dumps(data)
+        return ["Error: Maybe the class doesn't exist? \nreturned data:\n" + json.dumps(data)]
 
     #set up variable strings
     outlinepath = "{}".format(info['outlinePath'].upper())
@@ -111,11 +111,16 @@ def extract(data:dict):
         coreq = info['corequisites']
     except Exception:
         coreq = ""
-    return outlinepath, courseTitle, prof, classtimes, examtime, description, details, prereq, coreq
+    return [outlinepath, courseTitle, prof, classtimes, examtime, description, details, prereq, coreq]
 
 #formats the outline JSON into readable string
 def format_outline(data:dict):
-    outlinepath, courseTitle, prof, classtimes, examtime, description, details, prereq, coreq = extract(data)
+    strings= extract(data)
+
+    if len(strings) == 1:
+        return strings[0]
+
+    outlinepath, courseTitle, prof, classtimes, examtime, description, details, prereq, coreq = strings
     #setup final formatting
     doc = ""
     doc += "Outline for: {}\n".format(outlinepath)
@@ -140,21 +145,25 @@ def print_outline(dept, num, sec='placeholder', year = 'current', term = 'curren
     data = find_outline(dept, num, sec, year, term)
     return format_outline(data)
 
-#returns a dictionary with relevant information
+#returns a dictionary with relevant information or a string if something went wrong
 def dict_outline(dept, num, sec='placeholder', year = 'current', term = 'current'):
     data = find_outline(dept, num, sec, year, term)
 
-    outlinepath, courseTitle, prof, classtimes, examtime, description, details, prereq, coreq = extract(data)
-
+    strings = extract(data)
+    if len(strings) == 1:
+        return {
+            'Error': strings[0]
+        }
+    #if
     ret = {
-        'outlinepath': outlinepath,
-        'courseTitle': courseTitle,
-        'prof': prof,
-        'classtimes':classtimes,
-        'examtime':examtime,
-        'description':description,
-        'details':details,
-        'prereq':prereq,
-        'coreq':coreq
+        'outlinepath': strings[0],
+        'courseTitle': strings[1],
+        'prof': strings[2],
+        'classtimes':strings[3],
+        'examtime':strings[4],
+        'description':strings[5],
+        'details':strings[6],
+        'prereq':strings[7],
+        'coreq':strings[8]
     }
     return ret
