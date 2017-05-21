@@ -44,8 +44,8 @@ def find_outline(dept, num, sec='placeholder', year = 'current', term = 'current
     data = get_outline(dept, num, sec, year, term)
     return data
 
-#formats the outline JSON into readable string
-def format_outline(data:dict):
+#pulls data from outline JSON Dict
+def extract(data:dict):
     #data aliases
     try:
         info = data['info']
@@ -67,7 +67,7 @@ def format_outline(data:dict):
 
     classtimes = ""
     for time in schedule:
-        classtimes += "[{}] {} {} - {}\n{} {}, {}\n".format(
+        classtimes += "[{}] {} {} - {}, {} {}, {}\n".format(
             time['sectionCode'],
             time['days'],
             time['startTime'],
@@ -97,7 +97,8 @@ def format_outline(data:dict):
         #fix html tags
         details = re.sub('<[^<]+?>', '', details)
         #truncate
-        details = (details[:700] + " (...)") if len(details) > 700 else details
+        limit = 200
+        details = (details[:limit] + " (...)") if len(details) > limit else details
 
     except Exception:
         details = ""
@@ -110,7 +111,11 @@ def format_outline(data:dict):
         coreq = info['corequisites']
     except Exception:
         coreq = ""
+    return outlinepath, courseTitle, prof, classtimes, examtime, description, details, prereq, coreq
 
+#formats the outline JSON into readable string
+def format_outline(data:dict):
+    outlinepath, courseTitle, prof, classtimes, examtime, description, details, prereq, coreq = extract(data)
     #setup final formatting
     doc = ""
     doc += "Outline for: {}\n".format(outlinepath)
@@ -130,6 +135,26 @@ def format_outline(data:dict):
 
     return doc
 
+#returns a fairly nicely formatted string for easy reading
 def print_outline(dept, num, sec='placeholder', year = 'current', term = 'current'):
     data = find_outline(dept, num, sec, year, term)
     return format_outline(data)
+
+#returns a dictionary with relevant information
+def dict_outline(dept, num, sec='placeholder', year = 'current', term = 'current'):
+    data = find_outline(dept, num, sec, year, term)
+
+    outlinepath, courseTitle, prof, classtimes, examtime, description, details, prereq, coreq = extract(data)
+
+    ret = {
+        'outlinepath': outlinepath,
+        'courseTitle': courseTitle,
+        'prof': prof,
+        'classtimes':classtimes,
+        'examtime':examtime,
+        'description':description,
+        'details':details,
+        'prereq':prereq,
+        'coreq':coreq
+    }
+    return ret
